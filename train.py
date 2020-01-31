@@ -23,7 +23,7 @@ from tensorboardX import SummaryWriter
 import socket
 from datetime import datetime
 parser = argparse.ArgumentParser()
-parser.add_argument('--config', type=str, default='configs/config', help='Path to the config file.')
+parser.add_argument('--config', type=str, default='configs/config.yaml', help='Path to the config file.')
 parser.add_argument('--output_path', type=str, default='.', help="Outputs path.")
 parser.add_argument('--resume', type=int, default=-1)
 parser.add_argument('--snapshot_dir', type=str, default='./outputs/config/checkpoints')
