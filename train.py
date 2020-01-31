@@ -27,7 +27,7 @@ parser.add_argument('--config', type=str, default='configs/config.yaml', help='P
 parser.add_argument('--output_path', type=str, default='.', help="Outputs path.")
 parser.add_argument('--resume', type=int, default=-1)
 parser.add_argument('--snapshot_dir', type=str, default='./outputs/config/checkpoints')
-parser.add_argument('--n_datasets',type=int,default=4)
+parser.add_argument('--n_datasets',type=int,default=2)
 parser.add_argument('--data_root',type=str,default='./datasets/retinal_data/')
 parser.add_argument('--snapshot_save_iter', type=int, default=10)
 parser.add_argument('--sample_C',type=float,default=0.0)
