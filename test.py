@@ -21,17 +21,12 @@ import numpy as np
 from skimage import io
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--config', type=str, default='configs/CXR_lungs_MUNIT_1.0.yaml', help='Path to the config file.')
-parser.add_argument('--output_path', type=str, default='.', help="outputs path")
+parser.add_argument('--config', type=str, default='configs/config.yaml', help='Path to the config file.')
+parser.add_argument('--output_path', type=str, default='./outputs/', help="outputs path")
 parser.add_argument('--load', type=int, default=400)
-parser.add_argument('--snapshot_dir', type=str, default='./outputs/CXR_lungs_MUNIT_1.0/checkpoints')
+parser.add_argument('--snapshot_dir', type=str, default='./outputs/config/checkpoints')
 parser.add_argument('--n_datasets',type=int,default=2)
-parser.add_argument('--sample_C',type=float,default=1.0)
-parser.add_argument('--sample_D',type=float,default=1.0)
-parser.add_argument('--prob_A',type=float,default=0.4)
-parser.add_argument('--prob_B',type=float,default=0.4)
-parser.add_argument('--prob_C',type=float,default=0.2)
-parser.add_argument('--data_root',type=str,default='.')
+parser.add_argument('--data_root',type=str,default='./datasets/retinal_data/')
 parser.add_argument('--dataset_letters',type=str,default="['B','C','A','D']")
 opts = parser.parse_args()
 
@@ -42,22 +37,10 @@ config = get_config(opts.config)
 display_size = config['display_size']
 config['vgg_model_path'] = opts.output_path
 config['n_datasets']=opts.n_datasets
-config['sample_C']=opts.sample_C
-config['sample_D']=opts.sample_D
-config['prob_A']=opts.prob_A
-config['prob_B']=opts.prob_B
-config['prob_C']=opts.prob_C
 config['data_root']=opts.data_root
 
 # Setup model and data loader.
-if config['trainer'] == 'MUNIT':
-    trainer = MUNIT_Trainer(config, resume_epoch=opts.load, snapshot_dir=opts.snapshot_dir)
-elif config['trainer'] == 'UNIT':
-    trainer = UNIT_Trainer(config, resume_epoch=opts.load, snapshot_dir=opts.snapshot_dir)
-else:
-    sys.exit("Only support MUNIT|UNIT.")
-    os.exit()
-
+trainer = MUNIT_Trainer(config, resume_epoch=opts.load, snapshot_dir=opts.snapshot_dir)
 trainer.cuda()
 
 dataset_letters = eval(opts.dataset_letters)

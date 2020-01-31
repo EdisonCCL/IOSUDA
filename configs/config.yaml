@@ -50,18 +50,13 @@ num_workers: 4                              # Number of data loading threads.
 new_size: 256                               # First resize the shortest image side to this size.
 crop_image_height: 256                      # Random crop image of this height.
 crop_image_width: 256                       # Random crop image of this width.
-# data_root: ./datasets/CXR_lungs/            # Dataset folder location.
-data_root: ./datasets/retinal_resize/
-n_datasets: 4                               # Number of datasets for Domain Adaptation.
+data_root: ./datasets/retinal_data/           # Dataset folder location.
+
 trim: 0                                     # Trim images or not.
 transform_A: 2                              # Type of Data Augmentation. More info on file data.py.
 transform_B: 2                              # Type of Data Augmentation. More info on file data.py.
 transform_C: 2                              # Type of Data Augmentation. More info on file data.py.
 transform_D: 2                              # Type of Data Augmentation. More info on file data.py.
-prob_A: 0.3                                 # Probability of chosing the dataset at each iteration.
-prob_B: 0.3                                 # Probability of chosing the dataset at each iteration.
-prob_C: 0.2                                 # Probability of chosing the dataset at each iteration.
-prob_D: 0.2                                 # Probability of chosing the dataset at each iteration.
 sample_A: 1.0                               # Percentage of labeled samples to maintain in dataset to simulate UDA and SSDA.
 sample_B: 1.0                               # Percentage of labeled samples to maintain in dataset to simulate UDA and SSDA.
 sample_C: 1.0                               # Percentage of labeled samples to maintain in dataset to simulate UDA and SSDA.
