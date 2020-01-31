@@ -711,7 +711,7 @@ class UNet(nn.Module):
     
     def __init__(self, input_channels, num_classes):
 
-        super(UNet5, self).__init__()
+        super(UNet, self).__init__()
 
         self.drop = nn.Dropout2d(p=0.5)
 

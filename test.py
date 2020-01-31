@@ -22,7 +22,7 @@ from skimage import io
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--config', type=str, default='configs/config.yaml', help='Path to the config file.')
-parser.add_argument('--output_path', type=str, default='./outputs/', help="outputs path")
+parser.add_argument('--output_path', type=str, default='.', help="outputs path")
 parser.add_argument('--load', type=int, default=400)
 parser.add_argument('--snapshot_dir', type=str, default='./outputs/config/checkpoints')
 parser.add_argument('--n_datasets',type=int,default=2)
