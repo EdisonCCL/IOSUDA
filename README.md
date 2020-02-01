@@ -18,6 +18,6 @@ test the trained model:
 ---
 ## Metric
 
-left subfig. is jaccard index of OC and right subfig. is jaccard index of OD in training
+Left subfigure is jaccard index of OC and right subfigure is jaccard index of OD on RIM-ONE_r3 dataset.
 
 ![](https://github.com/EdisonCCL/IOSDA/blob/master/images/training_process.png)
