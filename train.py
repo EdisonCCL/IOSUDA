@@ -52,8 +52,6 @@ cudnn.benchmark = True
 
 # Load experiment setting.
 config = get_config(opts.config)
-# display_size = config['display_size']
-# config['vgg_model_path'] = opts.output_path
 config['n_datasets']=opts.n_datasets
 config['data_root']=opts.data_root
 config['snapshot_dir']=opts.snapshot_dir
