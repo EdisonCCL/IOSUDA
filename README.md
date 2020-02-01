@@ -10,7 +10,6 @@ code of IOSDA
 train a new model:
 
 `python train.py`
-
 ---
 ## Test
 
