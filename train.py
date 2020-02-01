@@ -52,8 +52,8 @@ cudnn.benchmark = True
 
 # Load experiment setting.
 config = get_config(opts.config)
-display_size = config['display_size']
-config['vgg_model_path'] = opts.output_path
+# display_size = config['display_size']
+# config['vgg_model_path'] = opts.output_path
 config['n_datasets']=opts.n_datasets
 config['data_root']=opts.data_root
 config['snapshot_dir']=opts.snapshot_dir
@@ -129,7 +129,7 @@ for ep in range(max(opts.resume, 0), epochs):
             images_list.append(images)
             labels_list.append(labels)
             use_list.append(use)
-        if (it+1)%10:
+        if (it+1)%10==0:
             print('        Ep: ' + str(ep + 1) + ', it: ' + str(it + 1) + '/' + str(n_batches))
 
         index_1 = 0
