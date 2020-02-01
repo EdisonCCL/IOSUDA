@@ -1,5 +1,5 @@
 """
-Copyright (C) 2017 NVIDIA Corporation.  All rights reserved.
+Copyright (C) 2018 NVIDIA Corporation.  All rights reserved.
 Licensed under the CC BY-NC-SA 4.0 license (https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode).
 """
 from networks import AdaINGen2, VAEGen, UNet,NLayerDiscriminator
@@ -125,7 +125,9 @@ class MUNIT_Trainer(nn.Module):
             self.sup.eval()
             for param in self.sup.parameters():
                 param.requires_grad = True
-
+##################################################################################
+# Mainly adapted from https://github.com/hugo-oliveira/CoDAGANs ##################
+##################################################################################
     def sup_update(self, x_a, x_b, y_a, y_b, d_index_a, d_index_b, use_a, use_b, ep,hyperparameters):
 
         self.gen_opt.zero_grad()
@@ -225,8 +227,8 @@ class MUNIT_Trainer(nn.Module):
         self.loss_gen_recon_c_a = self.recon_criterion(c_a_recon, c_a)
         self.loss_gen_recon_c_b = self.recon_criterion(c_b_recon, c_b)
 
-        self.loss_gen_cycrecon_x_a = self.recon_criterion(x_aba, x_a)
-        self.loss_gen_cycrecon_x_b = self.recon_criterion(x_bab, x_b)
+        #self.loss_gen_cycrecon_x_a = self.recon_criterion(x_aba, x_a)
+        #self.loss_gen_cycrecon_x_b = self.recon_criterion(x_bab, x_b)
 
         # GAN loss.
         self.loss_gen_adv_a = self.dis.calc_gen_loss(x_ba)
@@ -240,9 +242,9 @@ class MUNIT_Trainer(nn.Module):
                               hyperparameters['recon_c_w'] * self.loss_gen_recon_c_a + \
                               hyperparameters['recon_x_w'] * self.loss_gen_recon_x_b + \
                               hyperparameters['recon_s_w'] * self.loss_gen_recon_s_b + \
-                              hyperparameters['recon_c_w'] * self.loss_gen_recon_c_b + \
-                              hyperparameters['recon_x_cyc_w'] * self.loss_gen_cycrecon_x_a + \
-                              hyperparameters['recon_x_cyc_w'] * self.loss_gen_cycrecon_x_b
+                              hyperparameters['recon_c_w'] * self.loss_gen_recon_c_b 
+                              #hyperparameters['recon_x_cyc_w'] * self.loss_gen_cycrecon_x_a + \
+                              #hyperparameters['recon_x_cyc_w'] * self.loss_gen_cycrecon_x_b
 
         self.loss_gen_total.backward()
         self.gen_opt.step()

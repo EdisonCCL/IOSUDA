@@ -2,7 +2,6 @@
 Copyright (C) 2018 NVIDIA Corporation.  All rights reserved.
 Licensed under the CC BY-NC-SA 4.0 license (https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode).
 """
-# from torch.utils.serialization import load_lua
 import torchfile
 from torch.utils.data import DataLoader
 from networks import Vgg16
@@ -319,12 +318,9 @@ def jaccard(input1, input2):
     if cntUni == 0:
         J= 0.0
     else:
-            # J=2*float(cntInt) / (float(cntUni)+float(cntInt))
         J=float(cntInt) / float(cntUni)
     if cntUni_cup == 0:
-
         J_cup=0.0
-
     else:
         J_cup=float(cntInt_cup) / float(cntUni_cup)
     return J,J_cup

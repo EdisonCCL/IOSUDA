@@ -27,7 +27,7 @@ parser.add_argument('--load', type=int, default=400)
 parser.add_argument('--snapshot_dir', type=str, default='./outputs/config/checkpoints')
 parser.add_argument('--n_datasets',type=int,default=2)
 parser.add_argument('--data_root',type=str,default='./datasets/retinal_data/')
-parser.add_argument('--dataset_letters',type=str,default="['B','C','A','D']")
+parser.add_argument('--dataset_letters',type=str,default="['B','A']")
 opts = parser.parse_args()
 
 cudnn.benchmark = True

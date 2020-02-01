@@ -2,6 +2,8 @@
 Copyright (C) 2018 NVIDIA Corporation.  All rights reserved.
 Licensed under the CC BY-NC-SA 4.0 license (https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode).
 """
+import warnings
+warnings.filterwarnings('ignore')
 from utils import get_all_data_loaders, prepare_sub_folder, write_html, write_loss, get_config, write_2images, norm
 import argparse
 from torch.autograd import Variable
@@ -29,7 +31,7 @@ parser.add_argument('--resume', type=int, default=-1)
 parser.add_argument('--snapshot_dir', type=str, default='./outputs/config/checkpoints')
 parser.add_argument('--n_datasets',type=int,default=2)
 parser.add_argument('--data_root',type=str,default='./datasets/retinal_data/')
-parser.add_argument('--snapshot_save_iter', type=int, default=10)
+parser.add_argument('--snapshot_save_iter', type=int, default=5)
 parser.add_argument('--sample_C',type=float,default=0.0)
 parser.add_argument('--sample_D',type=float,default=0.0)
 parser.add_argument('--sample_A',type=float,default=0.0)
@@ -43,6 +45,7 @@ parser.add_argument('--transform_D',type=int,default=2)
 parser.add_argument('--dataset_letters',type=str,default="['B','A']")
 parser.add_argument('--test',type=int,default=1)
 parser.add_argument('--weight_temp',type=float,default=1)
+parser.add_argument('--recon_x_cyc_w',type=float,default=0)
 opts = parser.parse_args()
 #print(opts)
 cudnn.benchmark = True
@@ -66,7 +69,7 @@ config['transform_B']=opts.transform_B
 config['transform_C']=opts.transform_C
 config['transform_D']=opts.transform_D
 config['weight_temp']=opts.weight_temp
-
+config['recon_x_cyc_w']=opts.recon_x_cyc_w
 # Setup model and data loader.
 trainer = MUNIT_Trainer(config, resume_epoch=opts.resume, snapshot_dir=opts.snapshot_dir)
 trainer.cuda()
@@ -126,8 +129,8 @@ for ep in range(max(opts.resume, 0), epochs):
             images_list.append(images)
             labels_list.append(labels)
             use_list.append(use)
-
-        print('        Ep: ' + str(ep + 1) + ', it: ' + str(it + 1) + '/' + str(n_batches))
+        if (it+1)%10:
+            print('        Ep: ' + str(ep + 1) + ', it: ' + str(it + 1) + '/' + str(n_batches))
 
         index_1 = 0
         index_2 = 1
@@ -139,7 +142,6 @@ for ep in range(max(opts.resume, 0), epochs):
 
         use_1 = use_list[index_1]
         use_2 = use_list[index_2]
-        #print(use_1,use_2)
         images_1, images_2 = Variable(images_1.cuda()), Variable(images_2.cuda())
 
         # Main training code.

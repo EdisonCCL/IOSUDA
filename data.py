@@ -2,6 +2,9 @@
 Copyright (C) 2018 NVIDIA Corporation.  All rights reserved.
 Licensed under the CC BY-NC-SA 4.0 license (https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode).
 """
+##################################################################################
+# Mainly adapted from https://github.com/hugo-oliveira/CoDAGANs ##################
+##################################################################################
 import torch.utils.data as data
 import os.path
 import numpy as np
@@ -241,7 +244,9 @@ class ImageFolder(data.Dataset):
             msk = msk[int(beg_crop[0] * s0):int(end_crop[0] * s0), int(beg_crop[1] * s1):int(end_crop[1] * s1)]
 
         return img, msk
-
+############################################################################################################################
+# Change code for three categories #########################################################################################
+############################################################################################################################
     def __getitem__(self, index):
 
         item = self.imgs[index]
@@ -252,7 +257,6 @@ class ImageFolder(data.Dataset):
 
         img = self.loader(img_path)
         msk = self.loader(msk_path)
-#        print('msk is ',np.unique(msk))
         if self.channels == 1:
             if len(img.shape) > 2:
                 img = img[:,:,0]
@@ -267,28 +271,21 @@ class ImageFolder(data.Dataset):
 
         if self.trim_bool != 0:
             img, msk = self.trim(img, msk)
-#        print('mskis',np.unique(msk))
-#        print('rt',self.random_transform)
+
         if self.random_transform == 3:
             img, msk = self.transform(img, msk, negate=False, max_angle=90, low=0.2, high=0.8, shear=0.05, fliplr=True, flipud=True)
         elif self.random_transform == 2:
             img, msk = self.transform(img, msk)
         elif self.random_transform == 1:
             img, msk = self.transform(img, msk, negate=False, max_angle=2, low=0.05, high=0.95)
-#        print(img.shape)
         msk = transform.resize(msk, resize_to, preserve_range=True)
-#        print('msk',msk[(msk>msk.max()/3)&(msk<msk.max()*2/3)])
-#        print('mask is ',np.unique(msk))
         if msk.max()<10:
             msk=msk*256
         msk[msk <= msk.max() / 3] = 0
         msk[(msk >  msk.max() / 3)&(msk<=msk.max()*2/3)] = 1
         msk[msk>msk.max()*2/3]=2
- #       msk[msk==255]=2
         msk = msk.astype(np.int)
         msk = torch.from_numpy(msk)
-#        print(msk.shape)
-#        print('mskis',np.unique(msk))
         if self.sample != -1:
             if self.has_label[index] != 0:
                 use_msk = True
