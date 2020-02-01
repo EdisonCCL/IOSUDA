@@ -1,7 +1,8 @@
 # IOSDA
 
-code of IOSDA
+structure of IOSDA
 
+![](https://github.com/EdisonCCL/IOSDA/blob/master/images/IOSDA_structure.png)
 ---
 ## Train
 
