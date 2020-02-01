@@ -185,7 +185,7 @@ for ep in range(max(opts.resume, 0), epochs):
     writer.add_scalar('train_dis2/dis2_loss', dis2_loss, ep+1)
     writer.add_scalar('train_gen/gen_loss', gen_loss, ep+1)
     if (ep + 1) % config['snapshot_save_iter'] == 0:
-        trainer.save(checkpoint_directory, (ep + 1))
+        #trainer.save(checkpoint_directory, (ep + 1))
         if opts.test==1:
             print('    Testing ...')
     
