@@ -2,7 +2,7 @@
 
 Architecture of IOSUDA
 
-![](https://github.com/EdisonCCL/IOSUDA/blob/master/images/IOSDA_structure.png)
+![](https://github.com/EdisonCCL/IOSUDA/blob/master/images/IOSUDA.png)
 ---
 ## Train
 
