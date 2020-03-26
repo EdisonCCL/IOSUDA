@@ -131,38 +131,24 @@ class MUNIT_Trainer(nn.Module):
     def sup_update(self, x_a, x_b, y_a, y_b, d_index_a, d_index_b, use_a, use_b, ep,hyperparameters):
 
         self.gen_opt.zero_grad()
+
         # temp_open=hyperparameters['temp_open']
-        s_a = Variable(torch.randn(x_a.size(0), self.style_dim, 1, 1).cuda())
-        s_b = Variable(torch.randn(x_b.size(0), self.style_dim, 1, 1).cuda())
-
-        c_a, s_a_prime = self.gen.encode(x_a)
-        c_b, s_b_prime = self.gen.encode(x_b)
-
-        x_ba = self.gen.decode(c_b, s_a)
-        x_ab = self.gen.decode(c_a, s_b)
-
-        c_b_recon, s_a_recon = self.gen.encode(x_ba)
-        c_a_recon, s_b_recon = self.gen.encode(x_ab)
+        c_a, _ = self.gen.encode(x_a)
+        c_b, _ = self.gen.encode(x_b)
 
         # Forwarding through supervised model.
         p_a = None
         p_b = None
         loss_semi_a = None
-        loss_semi_b = None
         c_a=c_a.detach()
         c_b=c_b.detach()
-        c_b_recon=c_b_recon.detach()
-        c_a_recon=c_a_recon.detach()
 
         p_a = self.sup(c_a, use_a, True)
-        p_a_recon = self.sup(c_a_recon, use_a, True)
         p_b = self.sup(c_b, use_a, True)
-        p_b_recon = self.sup(c_b_recon, use_a, True)
 
-        loss_semi_a = self.semi_criterion(p_a, y_a[use_a, :, :]) + \
-                          self.semi_criterion(p_a_recon, y_a[use_a, :, :])
+        loss_semi_a = self.semi_criterion(p_a, y_a[use_a, :, :])
         if (ep+1)>10:
-            loss_gen_b = self.dis2.calc_gen_loss(p_b)+self.dis2.calc_gen_loss(p_b_recon)
+            loss_gen_b = self.dis2.calc_gen_loss(p_b)
         else:
             loss_gen_b = Variable(torch.tensor(0).cuda(), requires_grad=False) 
         self.loss_gen_total = None
@@ -175,6 +161,7 @@ class MUNIT_Trainer(nn.Module):
             self.loss_gen_total.backward()
             self.gen_opt.step()
         return seg_loss.item(),seg_gen_loss.item()
+
     def sup_forward(self, x, y, d_index, hyperparameters):
 
         self.sup.eval()
@@ -195,10 +182,6 @@ class MUNIT_Trainer(nn.Module):
     def gen_update(self, x_a, x_b, d_index_a, d_index_b, hyperparameters):
 
         self.gen_opt.zero_grad()
-
-        s_a = Variable(torch.randn(x_a.size(0), self.style_dim, 1, 1).cuda())
-        s_b = Variable(torch.randn(x_b.size(0), self.style_dim, 1, 1).cuda())
-
         # Encode.
         c_a, s_a_prime = self.gen.encode(x_a)
         c_b, s_b_prime = self.gen.encode(x_b)
@@ -208,27 +191,27 @@ class MUNIT_Trainer(nn.Module):
         x_b_recon = self.gen.decode(c_b, s_b_prime)
 
         # Decode (cross domain).
-        x_ba = self.gen.decode(c_b, s_a)
-        x_ab = self.gen.decode(c_a, s_b)
+        x_ba = self.gen.decode(c_b, s_a_prime)
+        x_ab = self.gen.decode(c_a, s_b_prime)
 
         # Encode again.
         c_b_recon, s_a_recon = self.gen.encode(x_ba)
         c_a_recon, s_b_recon = self.gen.encode(x_ab)
 
         # Decode again (if needed).
-        x_aba = self.gen.decode(c_a_recon, s_a_prime)
-        x_bab = self.gen.decode(c_b_recon, s_b_prime)
+        # x_aba = self.gen.decode(c_a_recon, s_a_prime)
+        # x_bab = self.gen.decode(c_b_recon, s_b_prime)
 
         # Reconstruction loss.
         self.loss_gen_recon_x_a = self.recon_criterion(x_a_recon, x_a)
         self.loss_gen_recon_x_b = self.recon_criterion(x_b_recon, x_b)
-        self.loss_gen_recon_s_a = self.recon_criterion(s_a_recon, s_a)
-        self.loss_gen_recon_s_b = self.recon_criterion(s_b_recon, s_b)
+        self.loss_gen_recon_s_a = self.recon_criterion(s_a_recon, s_a_prime)
+        self.loss_gen_recon_s_b = self.recon_criterion(s_b_recon, s_b_prime)
         self.loss_gen_recon_c_a = self.recon_criterion(c_a_recon, c_a)
         self.loss_gen_recon_c_b = self.recon_criterion(c_b_recon, c_b)
 
-        #self.loss_gen_cycrecon_x_a = self.recon_criterion(x_aba, x_a)
-        #self.loss_gen_cycrecon_x_b = self.recon_criterion(x_bab, x_b)
+        # self.loss_gen_cycrecon_x_a = self.recon_criterion(x_aba, x_a)
+        # self.loss_gen_cycrecon_x_b = self.recon_criterion(x_bab, x_b)
 
         # GAN loss.
         self.loss_gen_adv_a = self.dis.calc_gen_loss(x_ba)
@@ -242,9 +225,9 @@ class MUNIT_Trainer(nn.Module):
                               hyperparameters['recon_c_w'] * self.loss_gen_recon_c_a + \
                               hyperparameters['recon_x_w'] * self.loss_gen_recon_x_b + \
                               hyperparameters['recon_s_w'] * self.loss_gen_recon_s_b + \
-                              hyperparameters['recon_c_w'] * self.loss_gen_recon_c_b 
-                              #hyperparameters['recon_x_cyc_w'] * self.loss_gen_cycrecon_x_a + \
-                              #hyperparameters['recon_x_cyc_w'] * self.loss_gen_cycrecon_x_b
+                              hyperparameters['recon_c_w'] * self.loss_gen_recon_c_b
+                            #   hyperparameters['recon_x_cyc_w'] * self.loss_gen_cycrecon_x_a + \
+                            #   hyperparameters['recon_x_cyc_w'] * self.loss_gen_cycrecon_x_b
 
         self.loss_gen_total.backward()
         self.gen_opt.step()
@@ -261,16 +244,14 @@ class MUNIT_Trainer(nn.Module):
     def dis_update(self, x_a, x_b, d_index_a, d_index_b, hyperparameters):
 
         self.dis_opt.zero_grad()
-        s_a = Variable(torch.randn(x_a.size(0), self.style_dim, 1, 1).cuda())
-        s_b = Variable(torch.randn(x_b.size(0), self.style_dim, 1, 1).cuda())
 
         # Encode.
-        c_a, _ = self.gen.encode(x_a)
-        c_b, _ = self.gen.encode(x_b)
+        c_a, s_a_prime = self.gen.encode(x_a)
+        c_b, s_b_prime = self.gen.encode(x_b)
 
         # Decode (cross domain).
-        x_ba = self.gen.decode(c_b, s_a)
-        x_ab = self.gen.decode(c_a, s_b)
+        x_ba = self.gen.decode(c_b, s_a_prime)
+        x_ab = self.gen.decode(c_a, s_b_prime)
 
         # D loss.
         self.loss_dis_a = self.dis.calc_dis_loss(x_ba.detach(), x_a)
@@ -285,8 +266,8 @@ class MUNIT_Trainer(nn.Module):
     
         self.dis2_opt.zero_grad()
         # Encode.
-        c_a, s_a_prime = self.gen.encode(x_a)
-        c_b, s_b_prime = self.gen.encode(x_b)
+        c_a, _ = self.gen.encode(x_a)
+        c_b, _ = self.gen.encode(x_b)
 
         p_b = self.sup(c_b, use_a, True)
         p_a = self.sup(c_a, use_a, True)
