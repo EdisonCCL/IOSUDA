@@ -45,7 +45,7 @@ parser.add_argument('--transform_D',type=int,default=2)
 parser.add_argument('--dataset_letters',type=str,default="['B','A']")
 parser.add_argument('--test',type=int,default=1)
 parser.add_argument('--weight_temp',type=float,default=1)
-parser.add_argument('--recon_x_cyc_w',type=float,default=0)
+parser.add_argument('--recon_x_cyc_w',type=float,default=10)
 opts = parser.parse_args()
 #print(opts)
 cudnn.benchmark = True
